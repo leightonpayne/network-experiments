@@ -17,6 +17,8 @@ import { getSequentialColors } from "dicopal"
 import { sql, and, isNotNull, column } from "@uwdata/mosaic-sql"
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
+import { NetworkExport } from "@/components/network-export"
+import { useMetadataLayering } from "@/hooks/use-metadata-layering"
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -306,11 +308,14 @@ export function NetworkCosmograph({
   const hoverRequestId = React.useRef(0)
   const sizeLegendRef = React.useRef<CosmographSizeLegendRef>(null)
   const containerRef = React.useRef<HTMLDivElement | null>(null)
+  const viewportRef = React.useRef<HTMLDivElement | null>(null)
   const hasData = Boolean(dataFiles.points && dataFiles.links)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
   const [legendSortBy, setLegendSortBy] = React.useState<"count" | "label">("count")
   const legendRef = React.useRef<HTMLDivElement>(null)
+
+  useMetadataLayering(cosmographRef, loadPhase === "ready", config.pointColorBy)
 
   React.useEffect(() => {
     setMounted(true)
@@ -1355,9 +1360,18 @@ export function NetworkCosmograph({
     <CosmographProvider>
       <div
         ref={containerRef}
-        className="flex h-full min-h-0 max-h-full flex-1 flex-col overflow-hidden"
+        className="relative flex h-full min-h-0 max-h-full flex-1 flex-col overflow-hidden"
       >
+        <div className="absolute right-3 top-3 z-20">
+          <NetworkExport
+            graphRef={cosmographRef}
+            viewportRef={viewportRef}
+            ready={loadPhase === "ready" && !error}
+            colorBy={config.pointColorBy}
+          />
+        </div>
         <div
+          ref={viewportRef}
           className={`relative flex h-full min-h-0 max-h-full overflow-hidden rounded-lg border ${
             isDark ? "bg-[#0b0d12]" : "bg-[#f1f5f9]"
           }`}
