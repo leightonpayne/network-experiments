@@ -4,10 +4,10 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 export default defineConfig({
-  base: "/plasmid_network/",
+  base: "/network-experiments/",
   plugins: [react(), tailwindcss()],
   server: {
-    open: "/plasmid_network/",
+    open: "/network-experiments/",
   },
   resolve: {
     alias: {
